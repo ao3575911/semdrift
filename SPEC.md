@@ -298,7 +298,7 @@ Each milestone is one PR, merged only with CI green on 3.12 and 3.13.
 | M0 | Skeleton, error model, CI, docs workflow | ✅ merged (#1) |
 | M1 | Workspace, ingest (txt/jsonl/csv/CoNLL-U), basic + spaCy pipelines, slices, cache | Golden token counts on fixtures; a re-ingest is a cache hit; bad input gives exit 3 with a hint; hypothesis: hashing is stable and order-independent of metadata |
 | M2 | Information measures with group-jackknife CIs (the bootstrap duplicates documents and biases type-based measures down), KL/JS with top contributors | Golden values to 1e-9 on fixtures; JS is symmetric and in [0,1]; MATTR equals TTR when W=N (hypothesis) |
-| M3 | Static embeddings with seed replicates, hnswlib, nn/CSLS/analogy/axis | Same seed gives the same vectors; stability Jaccard is reported; a missing word is exit 3 with near-miss suggestions |
+| M3 | Static embeddings with seed replicates, exact search (ANN deferred to M8), nn/CSLS/analogy/axis | Same seed gives the same vectors; stability Jaccard is reported; a missing word is exit 3 with near-miss suggestions |
 | M4 | Semantic change: Procrustes, bootstrap CI, permutation p, BH-FDR, frequency-matched + shuffled nulls | Synthetic: rotation recovered (err <1e-6); injected words reach q<0.05; under a shuffled null, at most 5% of runs flag anything |
 | M5 | LM surprisal (distilgpt2), `lm pull`, offline mode, OOM handling | Matches a reference HF loop to 1e-4; `--offline` with no cache gives exit 4 plus the `lm pull` hint |
 | M6 | Evidence cards + experiment records + methods paragraph | `exp rerun` gives identical artefact hashes; the card shows ≥2 lenses |

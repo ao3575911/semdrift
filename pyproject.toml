@@ -27,6 +27,7 @@ dependencies = [
 [project.optional-dependencies]
 spacy = ["spacy>=3.8"]
 stanza = ["stanza>=1.10"]
+vec = ["gensim>=4.3.3"]
 
 [project.scripts]
 langsuite = "langsuite.cli.app:main"

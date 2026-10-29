@@ -133,3 +133,6 @@ def register(app: typer.Typer) -> None:
     from langsuite.cli import info_cmd
 
     app.add_typer(info_cmd.app, name="info")
+    from langsuite.cli import vec_cmd
+
+    app.add_typer(vec_cmd.app, name="vec")

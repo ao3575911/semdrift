@@ -1,0 +1,74 @@
+[project]
+name = "langsuite"
+version = "0.1.0.dev0"
+description = "Semantic change you can defend: information, geometry and time in one terminal."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.12"
+authors = [{ name = "ao3575911" }]
+keywords = ["linguistics", "corpus", "nlp", "semantic-change", "surprisal", "embeddings", "tui"]
+classifiers = [
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Text Processing :: Linguistic",
+  "Typing :: Typed",
+]
+dependencies = [
+  "typer>=0.27",
+  "polars>=1.30",
+  "numpy>=2.0",
+  "scipy>=1.14",
+  "xxhash>=3.5",
+  "platformdirs>=4.3",
+]
+
+[project.optional-dependencies]
+spacy = ["spacy>=3.8"]
+stanza = ["stanza>=1.10"]
+
+[project.scripts]
+langsuite = "langsuite.cli.app:main"
+
+[project.urls]
+Homepage = "https://github.com/ao3575911/langSuite"
+Documentation = "https://ao3575911.github.io/langSuite/"
+
+[dependency-groups]
+dev = ["pytest>=8.3", "hypothesis>=6.120", "ruff>=0.8", "mypy>=1.13", "pyright>=1.1.390"]
+docs = ["mkdocs-material>=9.5"]
+
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["*.md"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "N", "PT"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+files = ["src", "tests"]
+
+[[tool.mypy.overrides]]
+module = ["scipy.*", "spacy.*", "stanza.*", "gensim.*", "hnswlib.*", "transformers.*", "torch.*"]
+ignore_missing_imports = true
+
+[tool.pyright]
+include = ["src"]
+typeCheckingMode = "strict"
+pythonVersion = "3.12"
+reportMissingTypeStubs = false
+reportUnknownMemberType = false
+reportUnknownVariableType = false
+reportUnknownArgumentType = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

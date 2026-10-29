@@ -1,0 +1,19 @@
+site_name: langSuite
+site_description: Semantic change you can defend.
+repo_url: https://github.com/ao3575911/langSuite
+theme:
+  name: material
+  palette:
+    - scheme: default
+      toggle: { icon: material/brightness-7, name: Dark mode }
+    - scheme: slate
+      toggle: { icon: material/brightness-4, name: Light mode }
+  features: [content.code.copy, navigation.sections]
+markdown_extensions:
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.arithmatex: { generic: true }
+  - tables
+nav:
+  - Home: index.md
+  - Errors: errors.md

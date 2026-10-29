@@ -28,6 +28,7 @@ dependencies = [
 spacy = ["spacy>=3.8"]
 stanza = ["stanza>=1.10"]
 vec = ["gensim>=4.3.3"]
+lm = ["torch>=2.4", "transformers>=4.46", "huggingface-hub>=0.26"]
 
 [project.scripts]
 langsuite = "langsuite.cli.app:main"
@@ -39,6 +40,14 @@ Documentation = "https://ao3575911.github.io/langSuite/"
 [dependency-groups]
 dev = ["pytest>=8.3", "hypothesis>=6.120", "ruff>=0.8", "mypy>=1.13", "pyright>=1.1.390"]
 docs = ["mkdocs-material>=9.5"]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
 
 [build-system]
 requires = ["hatchling>=1.26"]

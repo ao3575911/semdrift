@@ -20,4 +20,5 @@ nav:
   - Information: information.md
   - Geometry: geometry.md
   - Semantic change: change.md
+  - LM surprisal: surprisal.md
   - Errors: errors.md

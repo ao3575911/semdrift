@@ -130,3 +130,6 @@ def register(app: typer.Typer) -> None:
     app.command("ingest")(ingest_cmd)
     app.add_typer(corpus_app, name="corpus")
     app.add_typer(slice_app, name="slice")
+    from langsuite.cli import info_cmd
+
+    app.add_typer(info_cmd.app, name="info")

@@ -139,3 +139,6 @@ def register(app: typer.Typer) -> None:
     from langsuite.cli import change_cmd
 
     app.add_typer(change_cmd.app, name="change")
+    from langsuite.cli import lm_cmd
+
+    app.add_typer(lm_cmd.app, name="lm")

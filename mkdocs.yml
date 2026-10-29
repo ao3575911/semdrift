@@ -19,4 +19,5 @@ nav:
   - Corpus: corpus.md
   - Information: information.md
   - Geometry: geometry.md
+  - Semantic change: change.md
   - Errors: errors.md

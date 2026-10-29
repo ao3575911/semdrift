@@ -75,7 +75,7 @@ def _spacy(model: str) -> Pipeline:
         ]
 
     version = str(nlp.meta.get("version", "?"))
-    return Pipeline(f"spacy/{spacy.__version__}/{model}/{version}", run)
+    return Pipeline(f"spacy/{_dist_version('spacy')}/{model}/{version}", run)
 
 
 def _stanza(lang: str) -> Pipeline:
@@ -101,4 +101,13 @@ def _stanza(lang: str) -> Pipeline:
             for w in sent.words
         ]
 
-    return Pipeline(f"stanza/{stanza.__version__}/{lang}", run)
+    return Pipeline(f"stanza/{_dist_version('stanza')}/{lang}", run)
+
+
+def _dist_version(name: str) -> str:
+    from importlib.metadata import PackageNotFoundError, version
+
+    try:
+        return version(name)
+    except PackageNotFoundError:
+        return "?"

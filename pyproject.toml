@@ -1,7 +1,7 @@
 [project]
 name = "langsuite"
 version = "0.1.0.dev0"
-description = "Semantic change you can defend: information, geometry and time in one terminal."
+description = "Semantic change you can defend: model-driven measurement of meaning, surprisal and change."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]

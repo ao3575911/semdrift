@@ -1,39 +1,64 @@
-# langSuite — build plan / spec
+# langSuite — build plan / spec (v2)
 
-Package and binary: `langsuite`. Owner: ao3575911. Licence: MIT. Docs: GitHub Pages (mkdocs-material).
-The code is name-neutral: the name lives only in `src/langsuite/_meta.py`.
+Package and binary: `langsuite`. Owner: ao3575911. Licence: MIT. Docs: GitHub Pages (mkdocs-material). The name lives only in `src/langsuite/_meta.py`.
+
+**Tagline:** *Semantic change you can defend: model-driven measurement of meaning, surprisal and change.*
 
 ## Decisions (Adam, 30 Oct 2026)
 
-- Name: **langSuite**. Tagline: *"Semantic change you can defend: information, geometry and time in one terminal."*
+- Name: langSuite.
 - Default LM: `distilgpt2` (Apache-2.0). A multilingual LM is opt-in, and its licence is checked at load time.
-- Pipeline: spaCy by default; Stanza is an optional extra, `langsuite[stanza]`.
+- spaCy is the default pipeline; Stanza is the optional extra `langsuite[stanza]`.
 - No PyPI or npm registration yet. Adam signs the tags.
 
-## Novelty check and pivot
+## Direction
 
-A scan on 30 Oct 2026 found the plain "Procrustes drift + neighbours" idea already done:
-- [semantic-drift](https://github.com/vmanam1/semantic-drift): terminal lookup, per-era word2vec, Procrustes alignment.
-- WoVis (DialRes 2026), TextEssence (NAACL 2021) and TASC: web tools for the same job.
+langSuite is the **model-driven measurement lab** for language research: language-model surprisal, embedding geometry and semantic change, with statistics a reviewer can check and experiments that re-run byte for byte. It uses the Python ML stack (PyTorch, transformers, gensim) because that is where the models live. It does **not** try to be a general corpus workbench: [glossa](https://github.com/ao3575911/glossa) owns that.
 
-Shipping only that would not impress. Known weak points of those tools:
-1. Drift scores carry no uncertainty, so random seed noise looks like change (Hellrich & Hahn 2016).
-2. Frequency and topic shifts masquerade as meaning change (Dubossarsky et al. 2017, "Outta Control").
-3. One vector per word, so polysemy is averaged away.
-4. No link to evidence a reviewer can check.
+## langSuite vs glossa
 
-**Upgraded wedge: evidence-grade change detection.**
-- *Calibrated:* replicate models over seeds and bootstrap resamples. Each word gets a change score, a 95% interval and a permutation p-value with Benjamini–Hochberg FDR. Words below the stability floor are flagged, not ranked.
-- *Controlled:* frequency-matched control words and a shuffled-slice null (Dubossarsky et al. 2017). Results are reported as change minus null.
-- *Corroborated:* every flagged word gets an evidence card from the other two lenses:
-  - the surprisal shift of the word in context per slice;
-  - the collocate shift (NPMI top-k Jaccard);
-  - KWIC lines sampled per slice.
+Both are Adam's projects. They are deliberately split so they don't overlap.
+
+| | **glossa** | **langSuite** |
+|---|---|---|
+| One line | Every linguist's research tool, in one fast terminal workspace | Model-driven measurement of meaning, surprisal and change |
+| Language / runtime | Rust, ratatui, single static binary | Python 3.12+, Textual, uv / pip, optional GPU |
+| Core question | *Where and how often does X occur?* | *How predictable is X, what does it mean, and has that changed — with what confidence?* |
+| Owns | Import of many formats (TXT/HTML/DOCX/PDF/TEI/CHAT/ELAN); positional index; KWIC + CQL; frequency, n-grams, collocations (MI, t, LL, logDice); keyness; dispersion; UD parsing and treebank query; phonetics, IGT, fieldwork, typology, norms-matched stimuli | LM surprisal / perplexity / entropy per token; static and contextual embeddings; neighbours, CSLS, semantic axes, sense clusters; aligned semantic change with intervals, permutation tests, FDR and null controls; cross-lens evidence cards; benchmark against SemEval-2020 Task 1; experiment replication (seeds, model hashes) |
+| Not in scope | Training or running neural LMs/embeddings as a core feature | General concordancing, CQL, keyness reports, parsing, annotation, phonetics, multi-format import |
+| Data in | Raw documents | Plain text / JSONL / CSV / CoNLL-U, **or a glossa corpus export** (CoNLL-U, NDJSON or Parquet) |
+| Typical user moment | Building and querying a corpus | Testing a hypothesis about meaning or processing on that corpus |
+| Scale strategy | Index, sub-second queries | Cache model outputs, batch on CPU/GPU, replicate runs |
+
+**Interop, not overlap.**
+- langSuite reads glossa exports directly (`langsuite ingest --from glossa`).
+- langSuite JSON output uses a compatible provenance envelope (`version, command, params, corpus_hash, model_hashes`), so glossa's session log and methods generator can cite langSuite runs.
+- glossa's planned module 6 (embeddings / sense clustering) could call langSuite through glossa's external-process plugin protocol instead of reimplementing it. **That is Adam's call (open decision 1).**
+- The context lines inside a langSuite evidence card are a small internal view, not a concordancer; for real KWIC, use glossa.
+
+## Novelty check
+
+A scan on 30 Oct 2026 found plain "Procrustes drift + neighbours" already done:
+- [semantic-drift](https://github.com/vmanam1/semantic-drift): terminal, per-era word2vec, Procrustes.
+- WoVis (DialRes 2026), TextEssence (2021) and TASC: web tools.
+
+Their gaps are where langSuite starts:
+1. No uncertainty: seed noise reads as change (Hellrich & Hahn 2016).
+2. Frequency and topic shifts masquerade as meaning change (Dubossarsky et al. 2017).
+3. One vector per word.
+4. No checkable evidence.
+
+**Wedge — calibrated, controlled, corroborated change:**
+- **Calibrated:** seed and bootstrap replicates give each change score a 95% interval and a permutation p-value with BH-FDR. Unstable words are flagged, not ranked.
+- **Controlled:** frequency-matched controls and a shuffled-slice null. Change is reported net of the null.
+- **Corroborated:** each flagged word gets an evidence card that combines
+  - the shift in its in-context surprisal;
+  - the shift in its NPMI collocates;
+  - sampled context lines per slice;
+  - sense-cluster proportions (contextual).
   A change is "supported" only when at least two lenses agree.
-- *Benchmarked:* `langsuite bench semeval2020` scores against SemEval-2020 Task 1 (Schlechtweg et al. 2020) when the user supplies the data. That corpus is licence-gated, so it is not bundled.
-- The evidence card exports straight into the methods paragraph.
-
-The rest of the original plan stays; milestone M6 is widened to cover this (see §7).
+- **Benchmarked:** `langsuite bench semeval2020` scores against the gold data (Schlechtweg et al. 2020) when the user supplies it.
+- **Replicable:** every run is an experiment record; `exp rerun` reproduces identical artefact hashes.
 
 Verified versions (PyPI latest, 30 Oct 2026). Pins will be `>=` these minor versions:
 
@@ -56,9 +81,6 @@ Verified versions (PyPI latest, 30 Oct 2026). Pins will be `>=` these minor vers
 | pyarrow | 26.0.0 | Parquet |
 | numpy / scipy / scikit-learn | 2.5.4 / 1.18.1 / 1.9.1 | maths, Procrustes, clustering |
 | networkx | 3.7 | neighbour graph |
-| conllu | 6.0.0 | CoNLL-U reader |
-| lxml | 6.1.3 | TEI reader |
-| pypdf | 6.21.4 | PDF text extraction |
 | matplotlib | 3.11.2 | PNG/SVG export |
 | xxhash | 4.0.2 | content hashing |
 | platformdirs | 4.14.0 | cache paths |
@@ -69,78 +91,70 @@ Verified versions (PyPI latest, 30 Oct 2026). Pins will be `>=` these minor vers
 
 Python 3.12+ support in every package: assumed from current releases, not checked one by one. Treat it as UNKNOWN until M0 CI passes on 3.12 and 3.13. `uv` version: UNKNOWN (it's not a PyPI dependency; pin it in CI).
 
+
 ---
 
 ## 1. Vision and users
 
-One terminal workspace where a researcher loads a corpus once and sees three linked views of any word: how predictable it is (information), what it sits near (geometry), and how both shift across eras, registers, authors or languages (change). Every result is reproducible, citable and scriptable. It's CPU-first, works offline, and ships no lock-in.
+A researcher points langSuite at a sliced corpus (by era, register, author or language) and asks model-based questions: which words changed meaning, how surprising is this construction to a language model, where does this word sit on a good–bad axis in 1850 vs 1950. Each answer comes with an interval, a null comparison and the evidence behind it, plus a methods paragraph. It runs offline on a laptop CPU and scales to a GPU.
 
 | User | Top jobs |
 |---|---|
-| **Maya, historical linguistics PhD student** | Slice a 1800–2000 corpus by decade; find words whose meaning moved; show the neighbour drift; export a figure plus a methods paragraph for the thesis. |
-| **Tomás, psycholinguist** | Get per-token surprisal for stimulus sentences from a fixed LM; compare conditions; produce a CSV for R with model hash and seed. |
-| **Priya, corpus/discourse analyst** | Compare two subcorpora (e.g. left/right press): keyness, collocates, KWIC, JS divergence; dig into a keyword's neighbours and contexts. |
+| **Maya, historical linguistics PhD student** | Find words that changed meaning between decades, with confidence intervals; show reviewers the evidence card; export a figure and methods paragraph |
+| **Tomás, psycholinguist** | Per-token surprisal and entropy for stimulus sets from a pinned LM; compare conditions; a CSV for R with the model hash |
+| **Priya, computational social scientist** | Compare framing across outlets on semantic axes (e.g. "migrant" on threat–welcome), with bootstrap CIs and replicate stability |
 
 ## 2. Competitive scan
 
-| Tool | Strong at | Lacks |
+| Tool | Strong at | Lacks (for this job) |
 |---|---|---|
-| AntConc (4.x) | KWIC, collocates, keyness; free | No embeddings, no surprisal, no time alignment; GUI only, not scriptable |
-| Sketch Engine | Huge corpora, word sketches, diachronic tools | Paid, hosted, closed; corpora on their servers; limited LM surprisal; methods not fully reproducible locally |
-| Voyant Tools | Quick browser visualisation | Shallow statistics, no embeddings or change model, weak on large corpora |
-| #LancsBox (X) | Collocation graphs (GraphColl), good stats | No contextual embeddings or surprisal; desktop GUI; licence not OSI |
-| gensim | Training static embeddings | Library only: no UI, no corpus stats, no alignment workflow |
-| whatlies | Embedding visualisation | Notebook-centric; maintenance status UNKNOWN |
-| HistWords (Hamilton et al.) | Reference diachronic method | Research code with fixed corpora, not a tool |
-| semantic-drift (vmanam1) | Terminal drift lookup, Procrustes | No uncertainty or nulls, single lens, fixed corpus |
-| WoVis / TextEssence / TASC | Interactive change visualisation | Web tools; no significance testing; no surprisal; no reproducible record |
-| lm-surprisal style scripts (e.g. `minicons`) | Surprisal from HF models | Single lens; no corpus or geometry views |
-
-**Our wedge (after pivot, see top):** calibrated, controlled, corroborated change. Also: the only tool that (a) cross-links surprisal, neighbours, collocates, KWIC and drift for one word, live; (b) runs locally and offline in a terminal; (c) writes a reproducible experiment record plus a cited methods paragraph. It's built for researchers who script, but useful to those who don't.
+| glossa (Adam's) | Corpus workbench: index, KWIC/CQL, stats, parsing | Model-driven measures — by design; see above |
+| AntConc / Sketch Engine / #LancsBox | Concordance, collocation, keyness | No LM surprisal, no calibrated semantic change |
+| semantic-drift | Terminal Procrustes drift | No intervals, nulls or second lens; fixed corpus |
+| WoVis / TextEssence / TASC | Interactive change visualisation | Web-only; no significance or null control; no surprisal |
+| HistWords (Hamilton et al.) | Reference diachronic method | Research code with fixed corpora |
+| minicons / lm-zoo | LM surprisal from HF models | Single lens; no corpus slicing, geometry or change |
+| gensim / whatlies | Embedding training / visualisation | Libraries; no workflow, stats or provenance |
 
 ## 3. Features (MoSCoW)
 
-**Must** (the thesis fails without these)
-- Ingest txt/csv/jsonl/CoNLL-U/TEI/PDF-text; metadata columns (year, author, register, lang) as slice keys. *Slicing is what makes the third lens work.*
-- spaCy pipeline by default, Stanza as an option; streaming; content-hashed cache. *Big corpora need to be cheap to re-run.*
-- Entropy suite: H1, H2, conditional H, TTR, MATTR, Zipf and Heaps fits, KL/JS between slices.
-- Surprisal from a local HF causal LM (default `distilgpt2`, Apache-2.0), a heatmap reader.
-- Static embeddings: train word2vec/fastText on the corpus, or load GloVe/fastText vectors. hnswlib index.
-- k-NN (cosine), CSLS, analogy, semantic axes.
-- Semantic change: per-slice training, Procrustes alignment, change score, neighbour drift timeline.
-- PMI, NPMI, log-likelihood collocates; keyness vs a reference corpus; KWIC.
-- Cross-linked word inspector in the TUI.
-- Experiment records plus CSV/Parquet/JSON export; a CLI equivalent for every action; `--json`.
+**Must**
+- Ingest txt/jsonl/csv/CoNLL-U and glossa exports. Metadata gives the slice keys. A content-hashed cache.
+- Information measures with bootstrap CIs: H1, H2, conditional H, MATTR, Zipf/Heaps fits, KL/JS between slices. *(These are distributional baselines that glossa doesn't compute.)*
+- Static embeddings (gensim word2vec/fastText) with seed replicates; hnswlib; neighbours, CSLS, analogy, semantic axes.
+- Semantic change: Procrustes, intervals, permutation p, BH-FDR, frequency-matched and shuffled nulls.
+- LM surprisal / perplexity / next-token entropy (`distilgpt2`), offline.
+- Evidence cards; experiment records; `--json`; graceful failure.
 
-**Should** (high value, not blocking)
-- Contextual embeddings (sentence-transformers, HF hidden states with layer selection).
-- Sense clusters from contextual vectors (k-means/agglomerative + silhouette).
-- 2-hop neighbour graph view.
-- Markdown/LaTeX methods paragraph with BibTeX.
-- FAISS backend; GPU switch.
-- Plugin entry points for metrics and models.
+**Should**
+- Contextual embeddings (sentence-transformers / HF hidden states, layer selection); sense clusters and their per-slice proportions.
+- `bench semeval2020`.
+- Textual TUI dashboard.
+- A methods paragraph and BibTeX per experiment.
+- FAISS; GPU.
+- Plugin entry points (`langsuite.metrics`, `langsuite.models`).
 
 **Could**
-- Multilingual LM default (e.g. `mGPT` / `bloom-560m`; licence must be checked, so UNKNOWN for now).
-- Cross-lingual alignment (MUSE-style CSLS).
-- Saved query sets, themes, asciinema recorder hook.
+- A multilingual LM (opt-in, licence-gated).
+- Cross-lingual alignment (CSLS).
+- A glossa plugin adapter.
 
-**Won't (v1)**
-- Hosted service, corpus hosting, annotation editing, model fine-tuning beyond static embeddings.
+**Won't**
+- KWIC/CQL concordancer, keyness reports, parsing, annotation or broad document import. glossa owns these.
 
 ## 4. Architecture
 
 ```mermaid
 flowchart LR
   subgraph IO[ingest]
-    R[readers: txt csv jsonl conllu tei pdf] --> P[pipeline: spaCy / Stanza]
+    R[readers: txt csv jsonl conllu, glossa export] --> P[pipeline: spaCy / Stanza]
   end
   P --> S[(store: Parquet tokens + docs meta)]
   S --> C[cache: content-hash keyed]
   C --> I[info: entropy, surprisal]
   C --> G[geom: static, contextual, ANN]
   C --> T[time: slicing, Procrustes, drift]
-  C --> K[colloc: PMI, NPMI, LL, keyness, KWIC]
+  C --> K[evidence: collocate shift, context lines]
   I & G & T & K --> Q[query service]
   Q --> CLI[Typer CLI / --json]
   Q --> TUI[Textual app]
@@ -149,7 +163,7 @@ flowchart LR
   PL[plugins via entry points] --> Q
 ```
 
-**Modules** (`src/langsuite/`): `_meta`, `ingest/`, `pipeline/`, `store/`, `cache/`, `models/`, `metrics/info.py`, `metrics/colloc.py`, `geom/`, `change/`, `query/`, `experiment/`, `export/`, `cli/`, `tui/`, `plugins/`.
+**Modules** (`src/langsuite/`): `_meta`, `ingest/`, `pipeline/`, `store/`, `cache/`, `models/`, `metrics/info.py`, `geom/`, `change/`, `query/`, `experiment/`, `export/`, `cli/`, `tui/`, `plugins/`.
 
 **Data model** (Parquet, polars):
 
@@ -178,12 +192,16 @@ erDiagram
 ```python
 class Metric(Protocol):
     name: str
-    citation: str            # BibTeX key
+    citation: str  # BibTeX key
+
     def compute(self, ctx: SliceContext, **params: Any) -> pl.DataFrame: ...
+
 
 class Reader(Protocol):
     suffixes: tuple[str, ...]
+
     def read(self, path: Path) -> Iterator[RawDoc]: ...
+
 
 class VectorModel(Protocol):
     def vectors(self, terms: Sequence[str]) -> npt.NDArray[np.float32]: ...
@@ -194,62 +212,47 @@ class VectorModel(Protocol):
 
 ```
 langsuite
-├── init                         new workspace (workspace.toml)
-├── ingest PATH... [--format] [--pipeline spacy:en_core_web_sm|stanza:en] [--meta col=...]
-├── slice define NAME EXPR       e.g. "year>=1900 and year<1950"
-├── slice ls
-├── info  entropy|ttr|mattr|zipf|heaps [--slice] [--window 500]
-├── info  divergence A B [--kl|--js]
-├── info  surprisal [--model distilgpt2] [--doc|--text] [--stride]
-├── vec   train [--algo w2v|fasttext] [--slice] [--seed]
-├── vec   load PATH  |  vec contextual [--model] [--layer]
-├── vec   index [--backend hnswlib|faiss]
-├── nn    WORD [-k 20] [--csls] [--hops 2]
-├── nn    analogy A B C   |  nn axis WORD... --pos good --neg bad
-├── sense WORD [--k auto]
-├── change evidence WORD        evidence card across lenses
+├── init                                   workspace (langsuite.toml + .langsuite/)
+├── ingest PATH... [--format txt|jsonl|csv|conllu] [--from glossa] [--meta K=V] [--pipeline auto|basic|spacy:MODEL|stanza:LANG]
+├── slice define NAME EXPR | slice ls      EXPR is a filter on metadata, e.g. "year < 1900"
+├── corpus info
+├── info  entropy|mattr|zipf|heaps [--slice S] [--bootstrap 200]
+├── info  divergence A B [--measure kl|js]
+├── lm    surprisal [--text|--file|--slice] [--model distilgpt2] [--stride 256] [--device cpu]
+├── lm    pull MODEL                       fetch once, for offline use
+├── vec   train [--slice S] [--algo w2v|fasttext] [--seeds 5] [--dim 100]
+├── vec   nn WORD [-k 20] [--csls] | vec analogy A B C | vec axis WORD... --pos .. --neg ..
+├── change score --slices A,B [--top 50] [--bootstrap 200] [--permutations 1000]
+├── change drift WORD --slices A,B,C
+├── change evidence WORD --slices A,B      evidence card across lenses
+├── sense WORD [--model ...] [--layer -1]
 ├── bench semeval2020 DIR
-├── change align --slices s1,s2,... | change score [--top 50] | change drift WORD
-├── colloc WORD [--measure pmi|npmi|ll] [--span 5] [--min-freq 5]
-├── keyness --target A --ref B [--measure ll]
-├── kwic  WORD [--width 40] [--slice]
 ├── exp   ls | show ID | rerun ID | methods ID [--md|--latex]
-├── export ID --to csv|parquet|json|png|svg
-├── cache ls|prune|verify
-├── batch FILE.toml              headless pipeline
+├── cache ls | prune
 └── tui
-Global: --json  --offline  --device  --seed  --workspace  -q/-v
+Global: --json  --debug  --workspace/-w  --offline  --seed
 ```
 
-**TUI screen map**
+**TUI** (Textual). The screens are:
+- **Changes:** the ranked table with intervals, q-values and a stability flag.
+- **Word:** an evidence card with a drift chart (textual-plotext), neighbours per slice, surprisal shift, collocate shift and context lines.
+- **Surprisal reader:** the text shaded by surprisal.
+- **Geometry:** axes and neighbour graph.
+- **Experiments:** the list, with re-run and export.
 
-```mermaid
-flowchart TB
-  Home[Corpus browser] -->|enter| Reader[Surprisal reader]
-  Home --> Inspector
-  Reader -->|select word| Inspector[Word inspector]
-  Inspector --> NN[Neighbour graph]
-  Inspector --> Coll[Collocates + KWIC]
-  Inspector --> Drift[Drift chart]
-  Palette[Command palette] -.-> Home & Reader & Inspector & NN & Coll & Drift
-  Saved[Saved queries] -.-> Inspector
-```
-
-The layout is a 3-column grid: browser | main | inspector. Below about 100 columns it collapses to tabs. When the focus word changes, a `WordSelected` message goes to every panel, and each panel refreshes from the query service in a worker, so the UI never blocks.
+Selecting a word anywhere opens it in Word. Keys:
 
 | Key | Action |
 |---|---|
 | `ctrl+p` | command palette |
-| `/` | find word, set focus |
-| `1`–`6` | browser, reader, inspector, graph, collocates/KWIC, drift |
-| `n` / `N` | next / previous KWIC hit |
-| `h` | toggle surprisal heatmap |
-| `s` | choose slice |
-| `enter` | focus word under cursor |
-| `b` | back in focus history |
-| `ctrl+s` | save query |
-| `e` | export current panel |
-| `t` | cycle theme |
+| `/` | focus a word |
+| `1`–`5` | screens |
+| `h` | heatmap toggle |
+| `s` | slices |
+| `b` | back |
+| `y` | copy the equivalent CLI command |
+| `e` | export |
+| `t` | theme |
 | `?` | help |
 | `q` | quit |
 
@@ -271,7 +274,6 @@ Notation: f(w) is the count of w; N is the token count; p(w) = f(w)/N; V is the 
 | Perplexity | 2^(mean surprisal per token) | Jelinek et al. 1977 |
 | PMI | log₂ [p(x,y) / (p(x)p(y))] | Church & Hanks 1990, *Comput. Linguist.* 16(1) |
 | NPMI | PMI / −log₂ p(x,y), in [−1, 1] | Bouma 2009, GSCL |
-| Log-likelihood G² | 2 Σ O log(O/E) over the 2×2 table | Dunning 1993, *Comput. Linguist.* 19(1); Rayson & Garside 2000 (keyness) |
 | Cosine | u·v / (‖u‖‖v‖) | — |
 | CSLS | 2cos(x,y) − r_T(x) − r_S(y), with r the mean cosine to the k=10 nearest neighbours | Conneau et al. 2018, ICLR ("Word Translation Without Parallel Data") |
 | Analogy | argmax cos(d, b − a + c) (3CosAdd); 3CosMul as an option | Mikolov et al. 2013; Levy & Goldberg 2014 |
@@ -280,23 +282,28 @@ Notation: f(w) is the count of w; N is the token count; p(w) = f(w)/N; V is the 
 | Change score | 1 − cos(w_t, R·w_{t+1}); plus neighbour-overlap (Jaccard of the k-NN) as a second measure | Hamilton et al. 2016; Gonen et al. 2020, ACL |
 | Sense clusters | k-means on contextual vectors, k chosen by silhouette | Giulianelli et al. 2020, ACL |
 
+| Bootstrap interval | percentile CI over B document-level resamples (default B=200) | Efron & Tibshirani 1993 |
+| Permutation p, BH-FDR | p from slice-label permutations; q via Benjamini–Hochberg | Benjamini & Hochberg 1995, *JRSS B* 57 |
+| Shuffled-slice null | the change score after random reassignment of documents to slices | Dubossarsky, Weinshall & Grossman 2017, EMNLP |
+| Seed stability | Jaccard of top-k neighbours across seed replicates | Hellrich & Hahn 2016, COLING; Antoniak & Mimno 2018, TACL |
+
 Every metric's BibTeX goes in `refs.bib`. The methods paragraph lists only the measures that were actually run.
 
 ## 7. Milestones
 
-Each milestone is one PR (or a small set of PRs) and passes CI on 3.12 and 3.13 before the next starts.
+Each milestone is one PR, merged only with CI green on 3.12 and 3.13.
 
-| M | Scope | Acceptance test |
+| M | Scope | Acceptance |
 |---|---|---|
-| M0 | Skeleton: uv, pyproject, ruff, mypy+pyright strict, pytest+hypothesis, CI, `_meta`, `--version` | CI green; `uv run langsuite --version` prints the version; strict type checks pass with zero errors |
-| M1 | Ingest + store + cache (txt, jsonl, csv, CoNLL-U, TEI, PDF) with spaCy | Golden: the UD English EWT sample ingests to the expected token count; ingesting twice is a cache hit (<10% of the first run's time); a hypothesis test shows hashing is stable |
-| M2 | Entropy suite + slices + KL/JS | Golden values on Gutenberg *Alice* (public domain) to 1e-6; JS is symmetric and lies in [0,1] (hypothesis); MATTR equals TTR when W=N |
-| M3 | Collocates, keyness, KWIC | PMI/LL match hand-computed 2×2 tables; KWIC hit count equals the frequency |
-| M4 | Static vectors + hnswlib + nn/analogy/axis/CSLS | Fixed seed gives the same top-10; on GloVe-50d the analogy king:man::queen:woman is in the top 5 (needs a download, so it's an opt-in test) |
-| M5 | Surprisal (distilgpt2) + perplexity + offline mode | Per-token values match a reference script to 1e-4; `--offline` with no network passes after warm-up |
-| M6 | Semantic change: slices, Procrustes, seed/bootstrap replicates, interval + permutation p + BH-FDR, frequency-matched and shuffled nulls, evidence cards (surprisal/collocate/KWIC), `bench semeval2020` | Synthetic: rotation recovered (err <1e-6); injected words rank top 5 with q<0.05; shuffled-slice null gives no word q<0.05 (hypothesis, 20 seeds) |
-| M7 | TUI: all panels, cross-linking, keybindings | Textual `Pilot` snapshot tests; selecting a word refreshes all 5 panels; renders at 80×24 and 200×50 |
-| M8 | Contextual vectors + senses, experiments, methods export, plugins, docs, PyPI release, GIF | `exp rerun` reproduces identical artefact hashes; an example plugin loads through its entry point; the docs build; TestPyPI install works on a clean venv |
+| M0 | Skeleton, error model, CI, docs workflow | ✅ merged (#1) |
+| M1 | Workspace, ingest (txt/jsonl/csv/CoNLL-U), basic + spaCy pipelines, slices, cache | Golden token counts on fixtures; a re-ingest is a cache hit; bad input gives exit 3 with a hint; hypothesis: hashing is stable and order-independent of metadata |
+| M2 | Information measures with bootstrap CIs, KL/JS | Golden values to 1e-9 on fixtures; JS is symmetric and in [0,1]; MATTR equals TTR when W=N (hypothesis) |
+| M3 | Static embeddings with seed replicates, hnswlib, nn/CSLS/analogy/axis | Same seed gives the same vectors; stability Jaccard is reported; a missing word is exit 3 with near-miss suggestions |
+| M4 | Semantic change: Procrustes, bootstrap CI, permutation p, BH-FDR, frequency-matched + shuffled nulls | Synthetic: rotation recovered (err <1e-6); injected words reach q<0.05; under a shuffled null, at most 5% of runs flag anything |
+| M5 | LM surprisal (distilgpt2), `lm pull`, offline mode, OOM handling | Matches a reference HF loop to 1e-4; `--offline` with no cache gives exit 4 plus the `lm pull` hint |
+| M6 | Evidence cards + experiment records + methods paragraph | `exp rerun` gives identical artefact hashes; the card shows ≥2 lenses |
+| M7 | Textual TUI | Pilot tests for every screen at 80×24 and 160×48 |
+| M8 | Contextual embeddings + senses, `bench semeval2020`, glossa import, plugins, docs, demo GIF, release prep | SemEval loader tests on a synthetic layout; a plugin loads; docs build strict |
 
 ## 8. Risks
 
@@ -311,27 +318,27 @@ Each milestone is one PR (or a small set of PRs) and passes CI on 3.12 and 3.13 
 | Dependency churn (transformers 5.x, textual 8.x) | Upper-bound major versions; nightly CI against the latest versions |
 | fasttext package maintenance | Train through gensim's FastText; the `fasttext` package is optional |
 
+| Overlap with glossa | The split is in the table above; new features are checked against glossa's PRD before being added |
+
 ## 9. 60-second demo
 
 ```
-$ uvx langsuite init demo && cd demo                         # 3s
-$ langsuite ingest gutenberg-1850-1950/*.txt --meta year=from:filename
-$ langsuite slice define early "year<1900"; langsuite slice define late "year>=1900"
-$ langsuite change align --slices early,late && langsuite change score --top 5
-  gay  0.61   broadcast  0.48   awful  0.44 ...         # the punchline
-$ langsuite tui                                              # focus "gay"
-  → drift chart bends, neighbours move from "cheerful, merry" toward new
-    senses; KWIC shows both eras; press h: surprisal heatmap in the reader
-$ langsuite exp methods last --md                            # cited paragraph
+langsuite init demo && cd demo
+langsuite ingest corpus/*.jsonl --meta year=field:year      # pre-cached
+langsuite slice define early "year < 1900"; langsuite slice define late "year >= 1900"
+langsuite change score --slices early,late --top 5           # score, 95% CI, q, stable?
+langsuite change evidence broadcast --slices early,late      # 3 lenses agree -> supported
+langsuite tui                                                 # Changes -> Word card
+langsuite exp methods last --md
 ```
 
-Record it with asciinema, convert it to a GIF with `agg`, and keep it under 60 s. The data is pre-cached so it runs offline. Whether the 1850–1950 Gutenberg sample shows these drifts strongly enough: UNKNOWN, check in M6 (Hamilton et al. use COHA; *gay* and *broadcast* are their examples).
+Record it with asciinema and render it with `agg`: high resolution, cropped clean, a smooth loop under 60 s. Whether a public-domain corpus shows a strong enough effect: UNKNOWN; check in M4 (fall back to a documented synthetic corpus).
 
 ## Open decisions (Adam)
 
-1. Tag signing for v0.x releases (Adam runs these).
-2. Pages: the workflow deploys the docs; Pages source must be set to "GitHub Actions" if the API can't do it.
-3. PyPI name registration and trusted publisher, when ready.
+1. Should glossa's module 6 (embeddings / senses) delegate to langSuite through glossa's plugin protocol, or stay separate?
+2. Tag signing for releases (Adam).
+3. PyPI registration and trusted publisher, when ready.
 
 ## Failure handling (all commands)
 

@@ -16,4 +16,5 @@ markdown_extensions:
   - tables
 nav:
   - Home: index.md
+  - Corpus: corpus.md
   - Errors: errors.md

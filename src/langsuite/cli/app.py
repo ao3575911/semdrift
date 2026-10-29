@@ -13,7 +13,7 @@ from langsuite.errors import ResourceError, UserError
 
 app = typer.Typer(
     name=BIN,
-    help=f"{NAME}: information, geometry and time in one terminal.",
+    help=f"{NAME}: model-driven measurement of meaning, surprisal and change.",
     no_args_is_help=True,
     add_completion=False,
     pretty_exceptions_enable=False,

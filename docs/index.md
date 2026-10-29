@@ -1,6 +1,6 @@
 # langSuite
 
-Semantic change you can defend: information, geometry and time in one terminal.
+Semantic change you can defend: model-driven measurement of meaning, surprisal and change.
 
 ```
 pip install langsuite        # not on PyPI yet; install from source:

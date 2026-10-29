@@ -17,4 +17,5 @@ markdown_extensions:
 nav:
   - Home: index.md
   - Corpus: corpus.md
+  - Information: information.md
   - Errors: errors.md

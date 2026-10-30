@@ -1,10 +1,10 @@
 # Semantic change
 
 ```bash
-langsuite vec train -s early --seeds 3
-langsuite vec train -s late --seeds 3
-langsuite change score --slices early,late
-langsuite change drift pivot --slices early,late
+semdrift vec train -s early --seeds 3
+semdrift vec train -s late --seeds 3
+semdrift change score --slices early,late
+semdrift change drift pivot --slices early,late
 ```
 
 How a word is scored:

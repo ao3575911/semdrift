@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from synth import write_change
 
-from langsuite.cli.app import main
+from semdrift.cli.app import main
 
 TRAIN = ["--seeds", "2", "--dim", "24", "--epochs", "8", "--min-count", "5"]
 CARD = ["--slices", "early,late", "--null-runs", "2", "--min-count", "5"]
@@ -32,7 +32,7 @@ def test_card_without_vectors_or_model_degrades(
     assert card["frequency"]["rows"][0]["count"] > 0
     assert card["examples"]["rows"]
     assert len(card["provenance"]["corpus_hash"]) >= 16
-    assert (sliced / ".langsuite" / "cards" / "pivot.md").exists()
+    assert (sliced / ".semdrift" / "cards" / "pivot.md").exists()
 
 
 def test_card_reports_supported_change(sliced: Path, capsys: pytest.CaptureFixture[str]) -> None:
@@ -44,7 +44,7 @@ def test_card_reports_supported_change(sliced: Path, capsys: pytest.CaptureFixtu
     card = json.loads(capsys.readouterr().out)
     assert card["change"]["test"]["q"] < 0.05
     assert any("supported" in f or "significant" in f for f in card["findings"])
-    md = (sliced / ".langsuite" / "cards" / "pivot.md").read_text()
+    md = (sliced / ".semdrift" / "cards" / "pivot.md").read_text()
     assert "## Methods" in md
     assert "Procrustes" in md
 

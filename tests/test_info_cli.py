@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from conftest import FIXTURES
 
-from langsuite.cli.app import main
+from semdrift.cli.app import main
 
 
 @pytest.fixture

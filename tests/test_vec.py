@@ -7,8 +7,8 @@ import numpy as np
 import pytest
 from synth import A, write_clusters
 
-from langsuite.cli.app import main
-from langsuite.geom.space import Space, normalise
+from semdrift.cli.app import main
+from semdrift.geom.space import Space, normalise
 
 pytest.importorskip("gensim")
 
@@ -34,7 +34,7 @@ def test_neighbours_find_cluster(trained: Path, capsys: pytest.CaptureFixture[st
 
 
 def test_training_is_deterministic(trained: Path) -> None:
-    d = trained / ".langsuite" / "vec" / "_all"
+    d = trained / ".semdrift" / "vec" / "_all"
     first = Space.load(d / "seed0.npz").vectors.copy()
     assert (
         main(["vec", "train", "--seeds", "2", "--dim", "20", "--epochs", "10", "--min-count", "2"])

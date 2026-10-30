@@ -33,5 +33,5 @@ class ResourceError(UserError):
 def missing_extra(module: str, extra: str) -> ModelError:
     return ModelError(
         f"optional dependency '{module}' is not installed",
-        f'install it with: pip install "langsuite[{extra}]"',
+        f'install it with: pip install "semdrift[{extra}]"',
     )

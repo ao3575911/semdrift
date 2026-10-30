@@ -1,13 +1,13 @@
 # Embedding geometry
 
-Install the extra: `pip install "langsuite[vec]"` (gensim).
+Install the extra: `pip install "semdrift[vec]"` (gensim).
 
 ```
-langsuite vec train --slice early --seeds 5 --dim 100 --min-count 5
-langsuite vec nn broadcast --slice early -k 15          # mean cosine, sd, replicates, stability
-langsuite vec nn broadcast --slice early --csls
-langsuite vec analogy man king woman
-langsuite vec axis migrant refugee expat --pos welcome --neg threat
+semdrift vec train --slice early --seeds 5 --dim 100 --min-count 5
+semdrift vec nn broadcast --slice early -k 15          # mean cosine, sd, replicates, stability
+semdrift vec nn broadcast --slice early --csls
+semdrift vec analogy man king woman
+semdrift vec axis migrant refugee expat --pos welcome --neg threat
 ```
 
 - **Replicates.** One SGNS model is trained per seed (single worker, with a seed-stable hash), so runs are reproducible.

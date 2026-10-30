@@ -1,4 +1,4 @@
-"""`langsuite lm ...`: language-model surprisal, offline after one pull."""
+"""`semdrift lm ...`: language-model surprisal, offline after one pull."""
 
 from __future__ import annotations
 
@@ -8,10 +8,10 @@ import numpy as np
 import polars as pl
 import typer
 
-from langsuite.cli.output import emit, info, warn
-from langsuite.corpus.workspace import Workspace
-from langsuite.errors import InputError, UsageError
-from langsuite.lm.model import DEFAULT_MODEL
+from semdrift.cli.output import emit, info, warn
+from semdrift.corpus.workspace import Workspace
+from semdrift.errors import InputError, UsageError
+from semdrift.lm.model import DEFAULT_MODEL
 
 app = typer.Typer(help="LM surprisal: per-word bits, slice predictability, surprising words.")
 
@@ -22,14 +22,14 @@ Groups = Annotated[int, typer.Option("--groups", "-g", help="Jackknife groups fo
 
 
 def _ws() -> Workspace:
-    from langsuite.cli.commands import ws
+    from semdrift.cli.commands import ws
 
     return ws()
 
 
 def _frame(ws: Workspace, slice_name: str | None, model: str, stride: int) -> pl.DataFrame:
-    from langsuite.lm.model import load
-    from langsuite.lm.surprisal import surprisal_frame
+    from semdrift.lm.model import load
+    from semdrift.lm.surprisal import surprisal_frame
 
     if stride < 1:
         raise UsageError("--stride must be at least 1")
@@ -66,7 +66,7 @@ def pull_cmd(
     accept_licence: Annotated[bool, typer.Option("--accept-licence")] = False,
 ) -> None:
     """Download a model once; every other lm command then runs offline."""
-    from langsuite.lm.model import pull
+    from semdrift.lm.model import pull
 
     path, lic = pull(name, accept_licence)
     emit({"model": name, "licence": lic, "path": str(path)}, title="pulled")

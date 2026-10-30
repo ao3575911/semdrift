@@ -1,4 +1,4 @@
-"""`langsuite info ...`: information measures with bootstrap intervals."""
+"""`semdrift info ...`: information measures with bootstrap intervals."""
 
 from __future__ import annotations
 
@@ -8,12 +8,12 @@ from typing import Annotated
 import numpy as np
 import typer
 
-from langsuite.cli.output import emit
-from langsuite.corpus.workspace import Workspace
-from langsuite.errors import InputError, UsageError
-from langsuite.metrics import info as m
-from langsuite.metrics.info import Estimate, IntArray
-from langsuite.metrics.load import encode, load_frame
+from semdrift.cli.output import emit
+from semdrift.corpus.workspace import Workspace
+from semdrift.errors import InputError, UsageError
+from semdrift.metrics import info as m
+from semdrift.metrics.info import Estimate, IntArray
+from semdrift.metrics.load import encode, load_frame
 
 app = typer.Typer(help="Information measures: entropy, diversity, Zipf/Heaps, divergence.")
 
@@ -27,13 +27,13 @@ Punct = Annotated[bool, typer.Option("--keep-punct", help="Count punctuation tok
 
 
 def _ws() -> Workspace:
-    from langsuite.cli.commands import ws
+    from semdrift.cli.commands import ws
 
     return ws()
 
 
 def _few(n_docs: int, groups: int) -> None:
-    from langsuite.cli.output import warn
+    from semdrift.cli.output import warn
 
     if groups and n_docs < 10:
         warn(f"only {n_docs} documents: the interval is rough; split long texts into documents")
@@ -188,7 +188,7 @@ def divergence(
         }
     )
     if top > 0:
-        from langsuite.cli.output import SETTINGS
+        from semdrift.cli.output import SETTINGS
 
         if not SETTINGS.json:
             emit(

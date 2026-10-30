@@ -31,9 +31,9 @@ import numpy.typing as npt
 import polars as pl
 from scipy.stats import t as student_t
 
-from langsuite.corpus.workspace import Workspace, atomic_write_bytes, hash_bytes
-from langsuite.errors import InputError, UsageError
-from langsuite.geom.space import (
+from semdrift.corpus.workspace import Workspace, atomic_write_bytes, hash_bytes
+from semdrift.errors import InputError, UsageError
+from semdrift.geom.space import (
     F32,
     Space,
     TrainParams,
@@ -125,7 +125,7 @@ def _manifest(ws: Workspace, slice_name: str) -> dict[str, object]:
     if not path.exists():
         raise InputError(
             f"no embeddings for slice '{slice_name}'",
-            f"train them with: langsuite vec train --slice {slice_name}",
+            f"train them with: semdrift vec train --slice {slice_name}",
         )
     data: dict[str, object] = json.loads(path.read_text(encoding="utf-8"))
     return data
@@ -210,7 +210,7 @@ def score(
     if null_runs < 2:
         raise UsageError("--null-runs must be at least 2 (the test needs the null's spread)")
     if progress:
-        from langsuite.cli.output import info
+        from semdrift.cli.output import info
 
         info(f"shuffled-slice null: {null_runs} run(s) x {len(seeds)} seed(s) x 2 sides (cached)")
     nulls = null_spaces(ws, a, b, null_runs, params, seeds)

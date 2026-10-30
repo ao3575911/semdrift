@@ -15,8 +15,8 @@ import numpy.typing as npt
 import polars as pl
 import xxhash
 
-from langsuite.corpus.workspace import Workspace, atomic_write_bytes
-from langsuite.errors import InputError, ResourceError, UsageError, missing_extra
+from semdrift.corpus.workspace import Workspace, atomic_write_bytes
+from semdrift.errors import InputError, ResourceError, UsageError, missing_extra
 
 F32 = npt.NDArray[np.float32]
 ALGOS = ("w2v", "fasttext")
@@ -175,13 +175,13 @@ def load_replicates(ws: Workspace, slice_name: str | None) -> list[Space]:
         where = f"--slice {slice_name}" if slice_name else ""
         raise InputError(
             f"no embeddings for slice '{slice_name or 'all'}'",
-            f"train them with: langsuite vec train {where}".strip(),
+            f"train them with: semdrift vec train {where}".strip(),
         )
     m = d / "manifest.json"
     if m.exists():
         saved = json.loads(m.read_text(encoding="utf-8")).get("corpus_hash")
         if saved and saved != ws.corpus_hash():
-            from langsuite.cli.output import warn
+            from semdrift.cli.output import warn
 
             warn("the corpus changed since these embeddings were trained; retrain to be current")
     return [Space.load(f) for f in files]

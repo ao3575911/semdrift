@@ -1,9 +1,9 @@
 # Information measures
 
 ```
-langsuite info summary --slice early            # H1, H(X,Y), H(Y|X), TTR, MATTR, Zipf s, Heaps beta
-langsuite info divergence early late             # JS divergence + the words that drive it
-langsuite --json info divergence early late --measure kl --alpha 0.5
+semdrift info summary --slice early            # H1, H(X,Y), H(Y|X), TTR, MATTR, Zipf s, Heaps beta
+semdrift info divergence early late             # JS divergence + the words that drive it
+semdrift --json info divergence early late --measure kl --alpha 0.5
 ```
 
 | Measure | Definition | Reference |
@@ -18,7 +18,7 @@ langsuite --json info divergence early late --measure kl --alpha 0.5
 
 **Intervals.**
 - Intervals are 95% delete-a-group jackknife intervals, with documents split into `--groups` groups (default 20).
-- langSuite doesn't bootstrap here on purpose. Resampling with replacement duplicates documents, which biases type-based measures (TTR, H1, Zipf) downward.
+- semdrift doesn't bootstrap here on purpose. Resampling with replacement duplicates documents, which biases type-based measures (TTR, H1, Zipf) downward.
 - With fewer than 10 documents a warning is shown.
 
 TTR, H1 and the Zipf/Heaps fits depend on sample size. Compare slices of similar size, or use MATTR.

@@ -7,9 +7,9 @@ from pathlib import Path
 
 import polars as pl
 
-from langsuite.corpus.pipeline import Pipeline
-from langsuite.corpus.readers import RawDoc, RawToken, Scalar, detect_format, iter_docs
-from langsuite.corpus.workspace import (
+from semdrift.corpus.pipeline import Pipeline
+from semdrift.corpus.readers import RawDoc, RawToken, Scalar, detect_format, iter_docs
+from semdrift.corpus.workspace import (
     TOKEN_SCHEMA,
     Workspace,
     atomic_write_parquet,
@@ -17,7 +17,7 @@ from langsuite.corpus.workspace import (
     docs_frame,
     hash_bytes,
 )
-from langsuite.errors import InputError
+from semdrift.errors import InputError
 
 
 @dataclass

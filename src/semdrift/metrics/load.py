@@ -7,9 +7,9 @@ from dataclasses import dataclass
 import numpy as np
 import polars as pl
 
-from langsuite.corpus.workspace import Workspace
-from langsuite.errors import InputError, UsageError
-from langsuite.metrics.info import IntArray
+from semdrift.corpus.workspace import Workspace
+from semdrift.errors import InputError, UsageError
+from semdrift.metrics.info import IntArray
 
 UNITS = ("norm", "lemma", "form")
 

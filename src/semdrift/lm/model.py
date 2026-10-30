@@ -1,4 +1,4 @@
-"""Causal LM loading: pull once, then run offline from the langSuite model cache."""
+"""Causal LM loading: pull once, then run offline from the semdrift model cache."""
 
 from __future__ import annotations
 
@@ -8,8 +8,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from langsuite.corpus.workspace import cache_root
-from langsuite.errors import ModelError, ResourceError, missing_extra
+from semdrift.corpus.workspace import cache_root
+from semdrift.errors import ModelError, ResourceError, missing_extra
 
 DEFAULT_MODEL = "distilbert/distilgpt2"
 # Licences that allow research use and redistribution of outputs without extra terms.
@@ -74,7 +74,7 @@ def pull(repo: str, accept_licence: bool = False) -> tuple[Path, str]:
         ) from e
     if not any(dest.glob("*.safetensors")):
         raise ModelError(f"'{repo}' has no safetensors weights", "pick a model that ships them")
-    (dest / "langsuite.json").write_text(json.dumps({"repo": repo, "licence": lic}))
+    (dest / "semdrift.json").write_text(json.dumps({"repo": repo, "licence": lic}))
     return dest, lic
 
 
@@ -100,7 +100,7 @@ def load(name: str) -> LM:
     if not (path / "config.json").exists():
         raise ModelError(
             f"model '{name}' is not available offline",
-            f"run: langsuite lm pull {name}",
+            f"run: semdrift lm pull {name}",
         )
     os.environ.setdefault("HF_HUB_OFFLINE", "1")
     torch.set_num_threads(max(1, (os.cpu_count() or 2) - 1))

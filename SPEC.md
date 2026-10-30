@@ -1,25 +1,25 @@
-# langSuite — build plan / spec (v2)
+# semdrift — build plan / spec (v2)
 
-Package and binary: `langsuite`. Owner: ao3575911. Licence: MIT. Docs: GitHub Pages (mkdocs-material). The name lives only in `src/langsuite/_meta.py`.
+Package and binary: `semdrift`. Owner: ao3575911. Licence: MIT. Docs: GitHub Pages (mkdocs-material). The name lives only in `src/semdrift/_meta.py`.
 
 **Tagline:** *Semantic change you can defend: model-driven measurement of meaning, surprisal and change.*
 
 ## Decisions (Adam, 30 Oct 2026)
 
-- Name: langSuite.
+- Name: semdrift.
 - Default LM: `distilgpt2` (Apache-2.0). A multilingual LM is opt-in, and its licence is checked at load time.
-- spaCy is the default pipeline; Stanza is the optional extra `langsuite[stanza]`.
+- spaCy is the default pipeline; Stanza is the optional extra `semdrift[stanza]`.
 - No PyPI or npm registration yet. Adam signs the tags.
 
 ## Direction
 
-langSuite is the **model-driven measurement lab** for language research: language-model surprisal, embedding geometry and semantic change, with statistics a reviewer can check and experiments that re-run byte for byte. It uses the Python ML stack (PyTorch, transformers, gensim) because that is where the models live. It does **not** try to be a general corpus workbench: [glossa](https://github.com/ao3575911/glossa) owns that.
+semdrift is the **model-driven measurement lab** for language research: language-model surprisal, embedding geometry and semantic change, with statistics a reviewer can check and experiments that re-run byte for byte. It uses the Python ML stack (PyTorch, transformers, gensim) because that is where the models live. It does **not** try to be a general corpus workbench: [glossa](https://github.com/ao3575911/glossa) owns that.
 
-## langSuite vs glossa
+## semdrift vs glossa
 
 Both are Adam's projects. They are deliberately split so they don't overlap.
 
-| | **glossa** | **langSuite** |
+| | **glossa** | **semdrift** |
 |---|---|---|
 | One line | Every linguist's research tool, in one fast terminal workspace | Model-driven measurement of meaning, surprisal and change |
 | Language / runtime | Rust, ratatui, single static binary | Python 3.12+, Textual, uv / pip, optional GPU |
@@ -31,10 +31,10 @@ Both are Adam's projects. They are deliberately split so they don't overlap.
 | Scale strategy | Index, sub-second queries | Cache model outputs, batch on CPU/GPU, replicate runs |
 
 **Interop, not overlap.**
-- langSuite reads glossa exports directly (`langsuite ingest --from glossa`).
-- langSuite JSON output uses a compatible provenance envelope (`version, command, params, corpus_hash, model_hashes`), so glossa's session log and methods generator can cite langSuite runs.
-- glossa's planned module 6 (embeddings / sense clustering) could call langSuite through glossa's external-process plugin protocol instead of reimplementing it. **That is Adam's call (open decision 1).**
-- The context lines inside a langSuite evidence card are a small internal view, not a concordancer; for real KWIC, use glossa.
+- semdrift reads glossa exports directly (`semdrift ingest --from glossa`).
+- semdrift JSON output uses a compatible provenance envelope (`version, command, params, corpus_hash, model_hashes`), so glossa's session log and methods generator can cite semdrift runs.
+- glossa's planned module 6 (embeddings / sense clustering) could call semdrift through glossa's external-process plugin protocol instead of reimplementing it. **That is Adam's call (open decision 1).**
+- The context lines inside a semdrift evidence card are a small internal view, not a concordancer; for real KWIC, use glossa.
 
 ## Novelty check
 
@@ -42,7 +42,7 @@ A scan on 30 Oct 2026 found plain "Procrustes drift + neighbours" already done:
 - [semantic-drift](https://github.com/vmanam1/semantic-drift): terminal, per-era word2vec, Procrustes.
 - WoVis (DialRes 2026), TextEssence (2021) and TASC: web tools.
 
-Their gaps are where langSuite starts:
+Their gaps are where semdrift starts:
 1. No uncertainty: seed noise reads as change (Hellrich & Hahn 2016).
 2. Frequency and topic shifts masquerade as meaning change (Dubossarsky et al. 2017).
 3. One vector per word.
@@ -57,7 +57,7 @@ Their gaps are where langSuite starts:
   - sampled context lines per slice;
   - sense-cluster proportions (contextual).
   A change is "supported" only when at least two lenses agree.
-- **Benchmarked:** `langsuite bench semeval2020` scores against the gold data (Schlechtweg et al. 2020) when the user supplies it.
+- **Benchmarked:** `semdrift bench semeval2020` scores against the gold data (Schlechtweg et al. 2020) when the user supplies it.
 - **Replicable:** every run is an experiment record; `exp rerun` reproduces identical artefact hashes.
 
 Verified versions (PyPI latest, 30 Oct 2026). Pins will be `>=` these minor versions:
@@ -96,7 +96,7 @@ Python 3.12+ support in every package: assumed from current releases, not checke
 
 ## 1. Vision and users
 
-A researcher points langSuite at a sliced corpus (by era, register, author or language) and asks model-based questions: which words changed meaning, how surprising is this construction to a language model, where does this word sit on a good–bad axis in 1850 vs 1950. Each answer comes with an interval, a null comparison and the evidence behind it, plus a methods paragraph. It runs offline on a laptop CPU and scales to a GPU.
+A researcher points semdrift at a sliced corpus (by era, register, author or language) and asks model-based questions: which words changed meaning, how surprising is this construction to a language model, where does this word sit on a good–bad axis in 1850 vs 1950. Each answer comes with an interval, a null comparison and the evidence behind it, plus a methods paragraph. It runs offline on a laptop CPU and scales to a GPU.
 
 | User | Top jobs |
 |---|---|
@@ -132,7 +132,7 @@ A researcher points langSuite at a sliced corpus (by era, register, author or la
 - Textual TUI dashboard.
 - A methods paragraph and BibTeX per experiment.
 - FAISS; GPU.
-- Plugin entry points (`langsuite.metrics`, `langsuite.models`).
+- Plugin entry points (`semdrift.metrics`, `semdrift.models`).
 
 **Could**
 - A multilingual LM (opt-in, licence-gated).
@@ -163,7 +163,7 @@ flowchart LR
   PL[plugins via entry points] --> Q
 ```
 
-**Modules** (`src/langsuite/`): `_meta`, `ingest/`, `pipeline/`, `store/`, `cache/`, `models/`, `metrics/info.py`, `geom/`, `change/`, `query/`, `experiment/`, `export/`, `cli/`, `tui/`, `plugins/`.
+**Modules** (`src/semdrift/`): `_meta`, `ingest/`, `pipeline/`, `store/`, `cache/`, `models/`, `metrics/info.py`, `geom/`, `change/`, `query/`, `experiment/`, `export/`, `cli/`, `tui/`, `plugins/`.
 
 **Data model** (Parquet, polars):
 
@@ -187,7 +187,7 @@ erDiagram
 
 **Model loading.** It's lazy and registry-based. HF models load with `local_files_only=True` when `--offline` or `HF_HUB_OFFLINE=1` is set. The model hash is the HF commit sha, or the sha256 of the files for local paths. The device is `cpu` by default, with `--device cuda|mps`. Long texts run through a sliding window with a stride (overlap is configurable), so surprisal is conditioned on up to the full context window.
 
-**Plugin API** (entry-point groups `langsuite.metrics`, `langsuite.models`, `langsuite.readers`):
+**Plugin API** (entry-point groups `semdrift.metrics`, `semdrift.models`, `semdrift.readers`):
 
 ```python
 class Metric(Protocol):
@@ -211,8 +211,8 @@ class VectorModel(Protocol):
 ## 5. CLI and TUI
 
 ```
-langsuite
-├── init                                   workspace (langsuite.toml + .langsuite/)
+semdrift
+├── init                                   workspace (semdrift.toml + .semdrift/)
 ├── ingest PATH... [--format txt|jsonl|csv|conllu] [--from glossa] [--meta K=V] [--pipeline auto|basic|spacy:MODEL|stanza:LANG]
 ├── slice define NAME EXPR | slice ls      EXPR is a filter on metadata, e.g. "year < 1900"
 ├── corpus info
@@ -323,26 +323,26 @@ Each milestone is one PR, merged only with CI green on 3.12 and 3.13.
 ## 9. 60-second demo
 
 ```
-langsuite init demo && cd demo
-langsuite ingest corpus/*.jsonl --meta year=field:year      # pre-cached
-langsuite slice define early "year < 1900"; langsuite slice define late "year >= 1900"
-langsuite change score --slices early,late --top 5           # score, 95% CI, q, stable?
-langsuite change evidence broadcast --slices early,late      # 3 lenses agree -> supported
-langsuite tui                                                 # Changes -> Word card
-langsuite exp methods last --md
+semdrift init demo && cd demo
+semdrift ingest corpus/*.jsonl --meta year=field:year      # pre-cached
+semdrift slice define early "year < 1900"; semdrift slice define late "year >= 1900"
+semdrift change score --slices early,late --top 5           # score, 95% CI, q, stable?
+semdrift change evidence broadcast --slices early,late      # 3 lenses agree -> supported
+semdrift tui                                                 # Changes -> Word card
+semdrift exp methods last --md
 ```
 
 Record it with asciinema and render it with `agg`: high resolution, cropped clean, a smooth loop under 60 s. Whether a public-domain corpus shows a strong enough effect: UNKNOWN; check in M4 (fall back to a documented synthetic corpus).
 
 ## Open decisions (Adam)
 
-1. Should glossa's module 6 (embeddings / senses) delegate to langSuite through glossa's plugin protocol, or stay separate?
+1. Should glossa's module 6 (embeddings / senses) delegate to semdrift through glossa's plugin protocol, or stay separate?
 2. Tag signing for releases (Adam).
 3. PyPI registration and trusted publisher, when ready.
 
 ## Failure handling (all commands)
 
 - Errors follow one format: `error: <what>` + `hint: <fix>`, with exit codes 2 (usage), 3 (input), 4 (model/offline), 5 (resources). There are no tracebacks unless `--debug` is set.
-- Missing optional extras give a hint naming the extra to install (`pip install "langsuite[lm]"`).
+- Missing optional extras give a hint naming the extra to install (`pip install "semdrift[lm]"`).
 - When offline, the error names the model and says how to fetch it ahead of time.
 - Out of memory (MemoryError or CUDA OOM) prints a hint to lower `--batch` or use `--device cpu`.

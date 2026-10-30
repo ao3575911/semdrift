@@ -21,4 +21,5 @@ nav:
   - Geometry: geometry.md
   - Semantic change: change.md
   - LM surprisal: surprisal.md
+  - Evidence cards: cards.md
   - Errors: errors.md

@@ -142,3 +142,6 @@ def register(app: typer.Typer) -> None:
     from langsuite.cli import lm_cmd
 
     app.add_typer(lm_cmd.app, name="lm")
+    from langsuite.cli.card_cmd import card_cmd
+
+    app.command("card")(card_cmd)

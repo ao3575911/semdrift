@@ -7,7 +7,7 @@ import pytest
 
 pytest.importorskip("transformers")
 
-from langsuite.cli.app import main
+from semdrift.cli.app import main
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
@@ -34,7 +34,7 @@ def tiny_model(tmp_path_factory: pytest.TempPathFactory) -> Path:
 def test_missing_model_is_model_error(workspace: Path, capsys: pytest.CaptureFixture[str]) -> None:
     assert main(["ingest", str(FIXTURES / "mini.jsonl"), "--pipeline", "basic"]) == 0
     assert main(["lm", "score", "--model", "not-pulled"]) == 4
-    assert "langsuite lm pull" in capsys.readouterr().err
+    assert "semdrift lm pull" in capsys.readouterr().err
 
 
 def test_score_top_words(workspace: Path, tiny_model: Path) -> None:
@@ -44,12 +44,12 @@ def test_score_top_words(workspace: Path, tiny_model: Path) -> None:
     assert main(["--json", "lm", "score", "--slices", "early", *m]) == 0
     assert main(["--json", "lm", "top", "-n", "3", *m]) == 0
     assert main(["--json", "lm", "words", "--min-count", "1", *m]) == 0
-    assert any((workspace / ".langsuite" / "lm").glob("*.parquet"))
+    assert any((workspace / ".semdrift" / "lm").glob("*.parquet"))
 
 
 def test_word_alignment_conserves_bits(tiny_model: Path) -> None:
-    from langsuite.lm.model import load
-    from langsuite.lm.surprisal import token_bits, word_bits
+    from semdrift.lm.model import load
+    from semdrift.lm.surprisal import token_bits, word_bits
 
     lm = load(str(tiny_model))
     text = "The cat sat on the mat, and the dog sat too."
@@ -68,8 +68,8 @@ def test_word_alignment_conserves_bits(tiny_model: Path) -> None:
 
 
 def test_window_matches_full_context_when_it_fits(tiny_model: Path) -> None:
-    from langsuite.lm.model import load
-    from langsuite.lm.surprisal import token_bits
+    from semdrift.lm.model import load
+    from semdrift.lm.surprisal import token_bits
 
     lm = load(str(tiny_model))
     a, _ = token_bits(lm, "the cat sat", stride=15)

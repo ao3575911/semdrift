@@ -8,7 +8,7 @@ from collections.abc import Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from langsuite.errors import InputError
+from semdrift.errors import InputError
 
 FORMATS = ("txt", "jsonl", "csv", "conllu")
 Scalar = str | int | float | bool | None

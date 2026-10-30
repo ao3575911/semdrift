@@ -7,8 +7,8 @@ import re
 from collections.abc import Callable
 from dataclasses import dataclass
 
-from langsuite.corpus.readers import RawToken
-from langsuite.errors import InputError, ModelError, missing_extra
+from semdrift.corpus.readers import RawToken
+from semdrift.errors import InputError, ModelError, missing_extra
 
 _APOS = "'\u2019"
 _TOKEN = re.compile(r"\w+(?:[-" + _APOS + r"]\w+)*|[^\w\s]", re.UNICODE)

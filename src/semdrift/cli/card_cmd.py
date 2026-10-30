@@ -1,4 +1,4 @@
-"""`langsuite card WORD`: one evidence card from every available measurement."""
+"""`semdrift card WORD`: one evidence card from every available measurement."""
 
 from __future__ import annotations
 
@@ -9,9 +9,9 @@ from typing import Annotated
 
 import typer
 
-from langsuite.cli.output import SETTINGS, emit, info, out_console
-from langsuite.corpus.workspace import atomic_write_bytes
-from langsuite.errors import UsageError
+from semdrift.cli.output import SETTINGS, emit, info, out_console
+from semdrift.corpus.workspace import atomic_write_bytes
+from semdrift.errors import UsageError
 
 
 def card_cmd(
@@ -25,8 +25,8 @@ def card_cmd(
     out: Annotated[Path | None, typer.Option("--out", "-o", help="Markdown file to write.")] = None,
 ) -> None:
     """Frequency, examples, change test, drift and surprisal, with methods and provenance."""
-    from langsuite.cli.commands import ws as get_ws
-    from langsuite.evidence.card import build, markdown
+    from semdrift.cli.commands import ws as get_ws
+    from semdrift.evidence.card import build, markdown
 
     names = [s.strip() for s in slices.split(",") if s.strip()]
     if not names:

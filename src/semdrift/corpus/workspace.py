@@ -1,4 +1,4 @@
-"""Workspace: `langsuite.toml` + `.langsuite/` holding the corpus as Parquet, slices and runs."""
+"""Workspace: `semdrift.toml` + `.semdrift/` holding the corpus as Parquet, slices and runs."""
 
 from __future__ import annotations
 
@@ -14,12 +14,12 @@ import polars as pl
 import xxhash
 from platformdirs import user_cache_dir
 
-from langsuite._meta import BIN, __version__
-from langsuite.corpus.readers import RawDoc, Scalar
-from langsuite.errors import InputError, UsageError
+from semdrift._meta import BIN, __version__
+from semdrift.corpus.readers import RawDoc, Scalar
+from semdrift.errors import InputError, UsageError
 
-MARKER = "langsuite.toml"
-STATE = ".langsuite"
+MARKER = "semdrift.toml"
+STATE = ".semdrift"
 TOKEN_SCHEMA = {
     "doc_id": pl.String,
     "sent": pl.Int32,
@@ -32,7 +32,7 @@ TOKEN_SCHEMA = {
 
 
 def cache_root() -> Path:
-    return Path(os.environ.get("LANGSUITE_CACHE_DIR") or user_cache_dir(BIN))
+    return Path(os.environ.get("SEMDRIFT_CACHE_DIR") or user_cache_dir(BIN))
 
 
 def atomic_write_bytes(path: Path, data: bytes) -> None:

@@ -9,8 +9,8 @@ FIXTURES = Path(__file__).parent / "fixtures"
 
 @pytest.fixture(autouse=True)
 def _isolated_cache(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setenv("LANGSUITE_CACHE_DIR", str(tmp_path / "cache"))
-    from langsuite.cli.output import SETTINGS
+    monkeypatch.setenv("SEMDRIFT_CACHE_DIR", str(tmp_path / "cache"))
+    from semdrift.cli.output import SETTINGS
 
     SETTINGS.json = False
     SETTINGS.debug = False
@@ -19,7 +19,7 @@ def _isolated_cache(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
 
 @pytest.fixture
 def workspace(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    from langsuite.cli.app import main
+    from semdrift.cli.app import main
 
     ws = tmp_path / "ws"
     assert main(["init", str(ws)]) == 0

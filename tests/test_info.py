@@ -6,7 +6,7 @@ import numpy as np
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from langsuite.metrics import info
+from semdrift.metrics import info
 
 codes_st = st.lists(st.integers(0, 12), min_size=1, max_size=200).map(
     lambda xs: np.array(xs, np.int64)

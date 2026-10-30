@@ -8,11 +8,11 @@ from typing import Annotated
 import polars as pl
 import typer
 
-from langsuite._meta import BIN
-from langsuite.cli.output import SETTINGS, emit, info
-from langsuite.corpus.readers import FORMATS, Scalar, coerce
-from langsuite.corpus.workspace import Workspace
-from langsuite.errors import UsageError
+from semdrift._meta import BIN
+from semdrift.cli.output import SETTINGS, emit, info
+from semdrift.corpus.readers import FORMATS, Scalar, coerce
+from semdrift.corpus.workspace import Workspace
+from semdrift.errors import UsageError
 
 slice_app = typer.Typer(help="Define and list corpus slices (metadata filters).")
 corpus_app = typer.Typer(help="Corpus summary.")
@@ -53,8 +53,8 @@ def ingest_cmd(
     ] = None,
 ) -> None:
     """Tokenise files and add them to the workspace corpus."""
-    from langsuite.corpus.ingest import ingest
-    from langsuite.corpus.pipeline import resolve
+    from semdrift.corpus.ingest import ingest
+    from semdrift.corpus.pipeline import resolve
 
     if fmt is not None and fmt not in FORMATS:
         raise UsageError(f"unknown format '{fmt}'", f"use one of: {', '.join(FORMATS)}")
@@ -123,25 +123,25 @@ def slice_ls() -> None:
 
 
 def register(app: typer.Typer) -> None:
-    if getattr(app, "_langsuite_registered", False):
+    if getattr(app, "_semdrift_registered", False):
         return
-    app._langsuite_registered = True  # type: ignore[attr-defined]
+    app._semdrift_registered = True  # type: ignore[attr-defined]
     app.command("init")(init)
     app.command("ingest")(ingest_cmd)
     app.add_typer(corpus_app, name="corpus")
     app.add_typer(slice_app, name="slice")
-    from langsuite.cli import info_cmd
+    from semdrift.cli import info_cmd
 
     app.add_typer(info_cmd.app, name="info")
-    from langsuite.cli import vec_cmd
+    from semdrift.cli import vec_cmd
 
     app.add_typer(vec_cmd.app, name="vec")
-    from langsuite.cli import change_cmd
+    from semdrift.cli import change_cmd
 
     app.add_typer(change_cmd.app, name="change")
-    from langsuite.cli import lm_cmd
+    from semdrift.cli import lm_cmd
 
     app.add_typer(lm_cmd.app, name="lm")
-    from langsuite.cli.card_cmd import card_cmd
+    from semdrift.cli.card_cmd import card_cmd
 
     app.command("card")(card_cmd)

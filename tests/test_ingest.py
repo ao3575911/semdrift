@@ -8,9 +8,9 @@ from conftest import FIXTURES
 from hypothesis import given
 from hypothesis import strategies as st
 
-from langsuite.cli.app import main
-from langsuite.corpus.pipeline import basic
-from langsuite.corpus.workspace import hash_bytes
+from semdrift.cli.app import main
+from semdrift.corpus.pipeline import basic
+from semdrift.corpus.workspace import hash_bytes
 
 
 def run_json(capsys: pytest.CaptureFixture[str], *args: str) -> object:

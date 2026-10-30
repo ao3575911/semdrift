@@ -1,4 +1,4 @@
-"""`langsuite change ...`: calibrated semantic change."""
+"""`semdrift change ...`: calibrated semantic change."""
 
 from __future__ import annotations
 
@@ -7,9 +7,9 @@ from typing import Annotated
 
 import typer
 
-from langsuite.cli.output import SETTINGS, emit, warn
-from langsuite.corpus.workspace import Workspace
-from langsuite.errors import UsageError
+from semdrift.cli.output import SETTINGS, emit, warn
+from semdrift.corpus.workspace import Workspace
+from semdrift.errors import UsageError
 
 app = typer.Typer(help="Semantic change with nulls, intervals and FDR control.")
 
@@ -19,7 +19,7 @@ Slices = Annotated[
 
 
 def _ws() -> Workspace:
-    from langsuite.cli.commands import ws
+    from semdrift.cli.commands import ws
 
     return ws()
 
@@ -42,7 +42,7 @@ def score_cmd(
     ] = False,
 ) -> None:
     """Rank words by change net of a frequency-matched shuffled-slice null, with BH q-values."""
-    from langsuite.change.score import score
+    from semdrift.change.score import score
 
     a, b = _split(slices)[:2]
     rows, meta = score(_ws(), a, b, null_runs, min_count, progress=True)
@@ -81,6 +81,6 @@ def drift_cmd(
     k: Annotated[int, typer.Option("-k", help="Neighbours per slice.")] = 8,
 ) -> None:
     """Neighbour timeline across slices (aligned distance from the first slice)."""
-    from langsuite.change.score import drift
+    from semdrift.change.score import drift
 
     emit(drift(_ws(), word.casefold(), _split(slices), k))

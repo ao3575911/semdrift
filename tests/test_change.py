@@ -9,8 +9,8 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 from synth import write_change
 
-from langsuite.change.score import bh, procrustes
-from langsuite.cli.app import main
+from semdrift.change.score import bh, procrustes
+from semdrift.cli.app import main
 
 TRAIN = ["--seeds", "2", "--dim", "24", "--epochs", "8", "--min-count", "5"]
 

@@ -1,11 +1,11 @@
 # LM surprisal
 
 ```bash
-pip install "langsuite[lm]"
-langsuite lm pull                      # distilbert/distilgpt2, Apache-2.0, once
-langsuite lm score --slices shakespeare,austen,fitzgerald
-langsuite lm top -s fitzgerald -n 10   # most surprising words, in context
-langsuite lm words -s austen           # types surprising beyond their frequency
+pip install "semdrift[lm]"
+semdrift lm pull                      # distilbert/distilgpt2, Apache-2.0, once
+semdrift lm score --slices shakespeare,austen,fitzgerald
+semdrift lm top -s fitzgerald -n 10   # most surprising words, in context
+semdrift lm words -s austen           # types surprising beyond their frequency
 ```
 
 Example run: 25 documents of about 250 words each, under distilgpt2:
@@ -19,9 +19,9 @@ Example run: 25 documents of about 250 words each, under distilgpt2:
 
 How it works:
 
-- **Offline.** `lm pull` checks the model card licence against an open list (`--accept-licence` overrides it) and stores safetensors in the langSuite cache. After that, every command loads with `local_files_only`.
+- **Offline.** `lm pull` checks the model card licence against an open list (`--accept-licence` overrides it) and stores safetensors in the semdrift cache. After that, every command loads with `local_files_only`.
 - **Word surprisal.** Text is detokenised (so `word,` rather than `word ,`). Subword surprisals in bits are summed into the corpus word that contains the token's last character, so the total number of bits is conserved.
 - **Long documents** are scored with overlapping windows (`--stride`). After the first window, each token is scored only once, with the maximum available context.
 - **Intervals.** Bits per word is a ratio estimator (sum of bits over sum of words), with a delete-a-group jackknife over documents.
-- **Caching.** Results are cached in `.langsuite/lm/` per corpus, model and stride.
+- **Caching.** Results are cached in `.semdrift/lm/` per corpus, model and stride.
 - **`words`** reports each word's residual from a log-frequency regression, which separates "rare" from "unexpected".

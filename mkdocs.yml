@@ -1,6 +1,6 @@
-site_name: langSuite
+site_name: semdrift
 site_description: Semantic change you can defend.
-repo_url: https://github.com/ao3575911/langSuite
+repo_url: https://github.com/ao3575911/semdrift
 theme:
   name: material
   palette:

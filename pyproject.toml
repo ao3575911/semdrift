@@ -1,5 +1,5 @@
 [project]
-name = "langsuite"
+name = "semdrift"
 version = "0.1.0.dev0"
 description = "Semantic change you can defend: model-driven measurement of meaning, surprisal and change."
 readme = "README.md"
@@ -31,11 +31,11 @@ vec = ["gensim>=4.3.3"]
 lm = ["torch>=2.4", "transformers>=4.46", "huggingface-hub>=0.26"]
 
 [project.scripts]
-langsuite = "langsuite.cli.app:main"
+semdrift = "semdrift.cli.app:main"
 
 [project.urls]
-Homepage = "https://github.com/ao3575911/langSuite"
-Documentation = "https://ao3575911.github.io/langSuite/"
+Homepage = "https://github.com/ao3575911/semdrift"
+Documentation = "https://ao3575911.github.io/semdrift/"
 
 [dependency-groups]
 dev = ["pytest>=8.3", "hypothesis>=6.120", "ruff>=0.8", "mypy>=1.13", "pyright>=1.1.390"]

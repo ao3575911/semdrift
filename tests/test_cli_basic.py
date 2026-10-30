@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from langsuite._meta import __version__
-from langsuite.cli.app import main
+from semdrift._meta import __version__
+from semdrift.cli.app import main
 
 
 def test_version(capsys: pytest.CaptureFixture[str]) -> None:

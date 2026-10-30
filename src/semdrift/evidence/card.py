@@ -1,4 +1,4 @@
-"""Evidence cards: every measurement langSuite has for one word, with provenance.
+"""Evidence cards: every measurement semdrift has for one word, with provenance.
 
 Each section either has data or a `skipped` reason, so a card never fails as a whole
 because one source is missing (no vectors, no pulled model, word too rare).
@@ -16,9 +16,9 @@ from typing import Any
 import numpy as np
 import polars as pl
 
-from langsuite._meta import __version__
-from langsuite.corpus.workspace import Workspace
-from langsuite.errors import InputError, UserError
+from semdrift._meta import __version__
+from semdrift.corpus.workspace import Workspace
+from semdrift.errors import InputError, UserError
 
 Section = dict[str, Any]
 
@@ -35,7 +35,7 @@ METHODS = {
 
 
 def _versions() -> dict[str, str]:
-    out = {"langsuite": __version__, "python": platform.python_version()}
+    out = {"semdrift": __version__, "python": platform.python_version()}
     for pkg in ("polars", "numpy", "gensim", "torch", "transformers"):
         with contextlib.suppress(metadata.PackageNotFoundError):
             out[pkg] = metadata.version(pkg)
@@ -109,7 +109,7 @@ def examples(ws: Workspace, word: str, slices: Sequence[str], n: int = 3, ctx: i
 def change(
     ws: Workspace, word: str, slices: Sequence[str], null_runs: int, min_count: int
 ) -> Section:
-    from langsuite.change.score import drift, score
+    from semdrift.change.score import drift, score
 
     out: Section = {"timeline": drift(ws, word, slices)}
     rows, meta = score(ws, slices[0], slices[-1], null_runs, min_count)
@@ -134,8 +134,8 @@ def change(
 
 
 def surprisal(ws: Workspace, word: str, slices: Sequence[str], model: str) -> Section:
-    from langsuite.lm.model import load
-    from langsuite.lm.surprisal import surprisal_frame
+    from semdrift.lm.model import load
+    from semdrift.lm.surprisal import surprisal_frame
 
     lm = load(model)
     rows = []
@@ -203,7 +203,7 @@ def build(
     known = ws.slices()
     for s in slices:
         if s not in known:
-            raise InputError(f"unknown slice '{s}'", "see: langsuite slice ls")
+            raise InputError(f"unknown slice '{s}'", "see: semdrift slice ls")
     card: dict[str, Any] = {"word": word, "slices": list(slices)}
     card["frequency"] = frequency(ws, word, slices)
     if not any(r["count"] for r in card["frequency"]["rows"]):

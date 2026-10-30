@@ -1,10 +1,10 @@
 # Evidence cards
 
 ```bash
-langsuite card pivot --slices early,late -m distilbert/distilgpt2
+semdrift card pivot --slices early,late -m distilbert/distilgpt2
 ```
 
-A card collects every measurement langSuite has for one word:
+A card collects every measurement semdrift has for one word:
 
 - frequency per slice, with jackknife intervals;
 - examples in context;
@@ -15,7 +15,7 @@ It ends with plain-language findings, a methods paragraph with citations, and pr
 
 A missing source doesn't make the card fail. If there are no vectors or no pulled model, that section says why it was skipped.
 
-Cards are written to `.langsuite/cards/WORD.md` and `.json`, or to the path given with `--out`.
+Cards are written to `.semdrift/cards/WORD.md` and `.json`, or to the path given with `--out`.
 
 A finding about meaning change is reported as *supported* only when all three agree:
 

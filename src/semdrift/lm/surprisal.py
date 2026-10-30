@@ -14,8 +14,8 @@ import re
 import numpy as np
 import polars as pl
 
-from langsuite.corpus.workspace import Workspace, atomic_write_parquet, hash_bytes
-from langsuite.lm.model import LM
+from semdrift.corpus.workspace import Workspace, atomic_write_parquet, hash_bytes
+from semdrift.lm.model import LM
 
 LN2 = math.log(2.0)
 # Detokenise so the LM sees natural text: "word," not "word ,".
@@ -88,7 +88,7 @@ def cache_key(ws: Workspace, lm: LM, doc_ids: list[str], stride: int) -> str:
 
 
 def surprisal_frame(ws: Workspace, frame: pl.DataFrame, lm: LM, stride: int) -> pl.DataFrame:
-    """Per-word surprisal, cached per (corpus, model, stride) under .langsuite/lm/."""
+    """Per-word surprisal, cached per (corpus, model, stride) under .semdrift/lm/."""
     key = cache_key(ws, lm, [], stride)
     path = ws.state / "lm" / f"{key}.parquet"
     cached = pl.read_parquet(path) if path.exists() else None

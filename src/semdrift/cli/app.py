@@ -7,9 +7,9 @@ from typing import Annotated
 
 import typer
 
-from langsuite._meta import BIN, NAME, __version__
-from langsuite.cli.output import SETTINGS, err_console
-from langsuite.errors import ResourceError, UserError
+from semdrift._meta import BIN, NAME, __version__
+from semdrift.cli.output import SETTINGS, err_console
+from semdrift.errors import ResourceError, UserError
 
 app = typer.Typer(
     name=BIN,
@@ -32,9 +32,7 @@ def root(
     debug: Annotated[bool, typer.Option("--debug", help="Show full tracebacks.")] = False,
     workspace: Annotated[
         str,
-        typer.Option(
-            "--workspace", "-w", help="Workspace directory.", envvar="LANGSUITE_WORKSPACE"
-        ),
+        typer.Option("--workspace", "-w", help="Workspace directory.", envvar="SEMDRIFT_WORKSPACE"),
     ] = ".",
     version: Annotated[
         bool, typer.Option("--version", callback=_version, is_eager=True, help="Show version.")
@@ -46,7 +44,7 @@ def root(
 
 
 def _register() -> None:
-    from langsuite.cli import commands
+    from semdrift.cli import commands
 
     commands.register(app)
 
